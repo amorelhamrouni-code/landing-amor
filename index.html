@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="fr" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Amor El hamrouni | Consultant Formateur Expert</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- React & ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <!-- Babel -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+        
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        
+        /* Scrollbar custom */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #020617; }
+        ::-webkit-scrollbar-thumb { background: #3b82f6; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #60a5fa; }
+
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .section-title {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 3rem;
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 4px;
+            background: linear-gradient(to right, #3b82f6, #a855f7);
+            border-radius: 2px;
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-300 antialiased selection:bg-blue-500/30 selection:text-blue-200">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // --- ICONES SVG MANUELLES (Fiabilité 100%) ---
+        const Icon = ({ d, className, size = 24 }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+                {d}
+            </svg>
+        );
+
+        const MailIcon = () => <Icon d={<><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></>} />;
+        const PhoneIcon = () => <Icon d={<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>} />;
+        const LinkedinIcon = () => <Icon d={<path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z M2 9h4v12H2z M4 2a2 2 0 1 0 0 4 2 2 0 0 0 0-4z"/>} />;
+        const BrainIcon = () => <Icon d={<><path d="M12 5a3 3 0 1 0-5.997.125 4 4 0 0 0-2.526 5.77 4 4 0 0 0 .556 6.588A4 4 0 1 0 12 18Z"/><path d="M9 13a4.5 4.5 0 0 0 3-4"/><path d="M6.003 5.125A3 3 0 0 0 6.401 6.5"/><path d="M3.477 10.896a4 4 0 0 1 .585-.396"/><path d="M6 18a4 4 0 0 1-1.97-3.284"/><path d="M8 21a4 4 0 0 0 1.97-3.284"/><path d="M13 5.482a3 3 0 0 1 .632 1.397"/><path d="M16 8a4 4 0 0 1 1.97 3.284"/><path d="M14 21a4 4 0 0 1-1.97-3.284"/><path d="M18.523 10.896a4 4 0 0 0-.585-.396"/><path d="M20.401 6.5a3 3 0 0 0-.398-1.375"/></>} />;
+        const UsersIcon = () => <Icon d={<><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></>} />;
+        const RocketIcon = () => <Icon d={<path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z M9 12H4s.55-3.03 2-4c1.62-1.1 4-1 4-1S10 10 9 12z M15 13v5s3.03-.55 4-2c1.1-1.62 1-4 1-4S17 12 15 13z"/>} />;
+        const CheckIcon = () => <Icon d={<><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></>} size={16} />;
+        const BriefcaseIcon = () => <Icon d={<><rect width="20" height="14" x="2" y="7" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></>} />;
+        const MapPinIcon = () => <Icon d={<><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></>} size={14} />;
+        const GraduationIcon = () => <Icon d={<><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></>} />;
+
+        const Portfolio = () => {
+            const [scrolled, setScrolled] = useState(false);
+
+            useEffect(() => {
+                const handleScroll = () => setScrolled(window.scrollY > 20);
+                window.addEventListener('scroll', handleScroll);
+                return () => window.removeEventListener('scroll', handleScroll);
+            }, []);
+
+            return (
+                <div className="min-h-screen relative overflow-x-hidden">
+                    
+                    {/* NAVIGATION */}
+                    <nav className={`fixed w-full z-50 transition-all duration-300 ${scrolled ? 'bg-slate-950/90 backdrop-blur-xl border-b border-slate-800 py-3 shadow-lg' : 'bg-transparent py-6'}`}>
+                        <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
+                            <div className="flex items-center gap-2">
+                                <div className="flex flex-col leading-none">
+                                    <span className="text-xl font-bold text-white tracking-tight uppercase">AMOR</span>
+                                    <span className="text-xl font-bold text-white tracking-tight uppercase">EL HAMROUNI</span>
+                                </div>
+                            </div>
+                            
+                            <div className="hidden md:flex items-center gap-8">
+                                <a href="#expertise" className="text-sm font-medium text-slate-400 hover:text-white transition-colors">Expertise</a>
+                                <a href="#experience" className="text-sm font-medium text-slate-400 hover:text-white transition-colors">Expériences</a>
+                                <a href="#formation" className="text-sm font-medium text-slate-400 hover:text-white transition-colors">Formation</a>
+                            </div>
+
+                            <div className="flex gap-3">
+                                <a href="mailto:AmorElhamrouni@gmail.com" className="flex items-center gap-2 px-5 py-2 rounded-full bg-blue-600 text-white text-sm font-semibold hover:bg-blue-500 transition-all shadow-lg shadow-blue-500/20">
+                                    <MailIcon />
+                                    <span>Contact</span>
+                                </a>
+                            </div>
+                        </div>
+                    </nav>
+
+                    {/* HERO SECTION */}
+                    <header className="relative pt-32 pb-20 lg:pt-40 px-6 z-10">
+                        <div className="max-w-5xl mx-auto text-center">
+                            <h1 className="text-4xl lg:text-6xl font-extrabold text-white mb-6 leading-tight">
+                                CONSULTANT FORMATEUR EN <br/>
+                                <span className="gradient-text">DÉVELOPPEMENT DE COMPÉTENCES</span>
+                            </h1>
+                            
+                            <div className="flex flex-wrap justify-center gap-4 mb-8 text-sm font-medium text-blue-400">
+                                <span className="px-3 py-1 bg-blue-500/10 rounded-full border border-blue-500/20">Pédagogie Active</span>
+                                <span className="px-3 py-1 bg-purple-500/10 rounded-full border border-purple-500/20 text-purple-400">Stratégie Commerciale</span>
+                                <span className="px-3 py-1 bg-emerald-500/10 rounded-full border border-emerald-500/20 text-emerald-400">IA Générative</span>
+                            </div>
+
+                            <div className="glass-panel p-8 rounded-2xl max-w-4xl mx-auto text-left relative">
+                                <div className="absolute -top-4 -left-4 text-6xl text-blue-600 opacity-20">"</div>
+                                <p className="text-lg text-slate-300 leading-relaxed italic mb-6">
+                                    Fort d'une double culture <strong>Entreprise & Pédagogie</strong>, je combine une expérience terrain significative en Vente et Relation Client avec une expertise d'Enseignant expérimenté. Mon métier est de rendre les savoirs opérationnels.
+                                </p>
+                                <p className="text-lg text-slate-300 leading-relaxed italic mb-6">
+                                    Convaincu que le numérique est un levier de performance incontournable, j'intègre l'utilisation pragmatique des Intelligences Artificielles (IA) et des outils digitaux pour moderniser les pratiques et booster l'efficacité au quotidien.
+                                </p>
+                                <p className="text-white font-semibold">
+                                    Mon objectif : Apporter aux organisations des solutions de formation réalistes, directement issues des exigences du marché.
+                                </p>
+                            </div>
+                        </div>
+                    </header>
+
+                    {/* COMPÉTENCES CLÉS */}
+                    <section id="expertise" className="py-20 px-6 bg-slate-900/30">
+                        <div className="max-w-7xl mx-auto">
+                            <div className="text-center">
+                                <h2 className="text-3xl font-bold text-white section-title">Compétences Clés & Expertises</h2>
+                            </div>
+
+                            <div className="grid md:grid-cols-3 gap-8 mt-8">
+                                {/* Bloc 1 */}
+                                <div className="glass-panel p-8 rounded-2xl hover:bg-slate-800/80 transition-all border-t-4 border-t-purple-500">
+                                    <div className="mb-6 text-purple-500"><UsersIcon /></div>
+                                    <h3 className="text-xl font-bold text-white mb-4">Pédagogie Active & Gestion de Groupe</h3>
+                                    <ul className="space-y-4 text-sm text-slate-400">
+                                        <li><strong className="text-slate-200">Animation :</strong> Expertise gestion publics variés. Capacité à capter l'attention et fédérer.</li>
+                                        <li><strong className="text-slate-200">Ingénierie :</strong> Conception de modules engageants, basés sur la pratique et l'interactivité.</li>
+                                        <li><strong className="text-slate-200">Différenciation :</strong> Adaptation du rythme et des méthodes en temps réel.</li>
+                                    </ul>
+                                </div>
+
+                                {/* Bloc 2 */}
+                                <div className="glass-panel p-8 rounded-2xl hover:bg-slate-800/80 transition-all border-t-4 border-t-blue-500">
+                                    <div className="mb-6 text-blue-500"><BrainIcon /></div>
+                                    <h3 className="text-xl font-bold text-white mb-4">Intelligence Artificielle & Agilité</h3>
+                                    <ul className="space-y-4 text-sm text-slate-400">
+                                        <li><strong className="text-slate-200">IA Générative :</strong> Maîtrise avancée LLMs (ChatGPT, Claude, Gemini) pour optimiser l'efficacité.</li>
+                                        <li><strong className="text-slate-200">Productivité :</strong> Aide à la rédaction, synthèse, idéation, automatisation.</li>
+                                        <li><strong className="text-slate-200">Acculturation :</strong> Démystification des outils numériques (Teams, Canva, Office).</li>
+                                    </ul>
+                                </div>
+
+                                {/* Bloc 3 */}
+                                <div className="glass-panel p-8 rounded-2xl hover:bg-slate-800/80 transition-all border-t-4 border-t-emerald-500">
+                                    <div className="mb-6 text-emerald-500"><RocketIcon /></div>
+                                    <h3 className="text-xl font-bold text-white mb-4">Communication & Efficacité Pro</h3>
+                                    <ul className="space-y-4 text-sm text-slate-400">
+                                        <li><strong className="text-slate-200">Posture :</strong> Formation au savoir-être, communication assertive, gestion de conflits.</li>
+                                        <li><strong className="text-slate-200">Organisation :</strong> Gestion du temps et culture de projet pour l'autonomie.</li>
+                                        <li><strong className="text-slate-200">Marketing Personnel :</strong> Personal Branding et valorisation des compétences.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* EXPÉRIENCES - PARTIE 1 : ENTREPRISE (DISTINCTE) */}
+                    <section id="experience" className="py-20 px-6">
+                        <div className="max-w-6xl mx-auto">
+                            <div className="text-center mb-12">
+                                <h2 className="text-3xl font-bold text-white section-title">Expérience Entreprise</h2>
+                                <p className="text-slate-400">Le socle de ma légitimité terrain</p>
+                            </div>
+
+                            <div className="bg-gradient-to-r from-slate-900 to-slate-800 p-8 md:p-12 rounded-3xl border border-slate-700 shadow-2xl relative overflow-hidden">
+                                <div className="absolute top-0 right-0 w-64 h-64 bg-blue-600/10 rounded-full blur-[80px]"></div>
+                                
+                                <div className="relative z-10 flex flex-col md:flex-row gap-10 items-start">
+                                    <div className="md:w-1/3">
+                                        <div className="inline-flex p-3 bg-blue-600 rounded-xl text-white mb-4">
+                                            <BriefcaseIcon />
+                                        </div>
+                                        <h3 className="text-2xl font-bold text-white mb-2">Parcours en Entreprise</h3>
+                                        <p className="text-blue-400 font-medium text-sm uppercase tracking-wider">Marketing & Vente</p>
+                                        <p className="mt-4 text-slate-400 text-sm">Diverses Sociétés | Fonctions Commerciales & Relation Client</p>
+                                    </div>
+
+                                    <div className="md:w-2/3 space-y-8">
+                                        <div>
+                                            <h4 className="text-white font-bold mb-2 flex items-center gap-2">
+                                                <span className="w-2 h-2 rounded-full bg-blue-500"></span>
+                                                Le Terrain
+                                            </h4>
+                                            <p className="text-slate-300 leading-relaxed">
+                                                Pratique opérationnelle de la prospection, de la négociation, de la vente et de la fidélisation client en environnement concurrentiel.
+                                            </p>
+                                        </div>
+                                        <div>
+                                            <h4 className="text-white font-bold mb-2 flex items-center gap-2">
+                                                <span className="w-2 h-2 rounded-full bg-purple-500"></span>
+                                                La Plus-value Pédagogique
+                                            </h4>
+                                            <p className="text-slate-300 leading-relaxed">
+                                                Cette expérience vécue me permet d'illustrer mes formations par des cas réels (gestion de clients difficiles, objectifs chiffrés) et de préparer les apprenants aux attentes concrètes du business.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* EXPÉRIENCES - PARTIE 2 : ENSEIGNEMENT (TIMELINE) */}
+                    <section className="py-20 px-6 bg-slate-900/20">
+                        <div className="max-w-5xl mx-auto">
+                            <div className="text-center mb-16">
+                                <h2 className="text-3xl font-bold text-white section-title">Pédagogie Appliquée</h2>
+                                <p className="text-slate-400">Secondaire Technique & Professionnel</p>
+                            </div>
+
+                            <div className="space-y-8 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-slate-700 before:to-transparent">
+                                
+                                {/* IESPP Nursing */}
+                                <div className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
+                                    <div className="flex items-center justify-center w-10 h-10 rounded-full border border-slate-700 bg-slate-900 group-[.is-active]:bg-emerald-500 text-slate-500 group-[.is-active]:text-emerald-50 shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2">
+                                        <div className="w-3 h-3 bg-white rounded-full"></div>
+                                    </div>
+                                    <div className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-6 rounded-2xl border border-slate-800 bg-slate-950 shadow-lg">
+                                        <div className="flex justify-between items-start mb-2">
+                                            <h3 className="font-bold text-white">IESPP Nursing</h3>
+                                            <span className="text-xs text-emerald-400 font-bold bg-emerald-500/10 px-2 py-1 rounded flex gap-1 items-center"><MapPinIcon/> Mons</span>
+                                        </div>
+                                        <div className="text-sm font-medium text-emerald-500 mb-3">Enseignant en Communication</div>
+                                        <p className="text-sm text-slate-400 mb-2"><strong>Contexte :</strong> Formation axée sur le relationnel et le savoir-être (Futurs soignants).</p>
+                                        <p className="text-sm text-slate-400"><strong>Réalisation :</strong> Développement des "Soft Skills" indispensables : écoute active, éthique professionnelle et gestion des situations délicates.</p>
+                                    </div>
+                                </div>
+
+                                {/* École Le Trèfle */}
+                                <div className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
+                                    <div className="flex items-center justify-center w-10 h-10 rounded-full border border-slate-700 bg-slate-900 group-[.is-active]:bg-emerald-500 text-slate-500 group-[.is-active]:text-emerald-50 shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2">
+                                        <div className="w-3 h-3 bg-white rounded-full"></div>
+                                    </div>
+                                    <div className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-6 rounded-2xl border border-slate-800 bg-slate-950 shadow-lg">
+                                        <div className="flex justify-between items-start mb-2">
+                                            <h3 className="font-bold text-white">École Le Trèfle</h3>
+                                            <span className="text-xs text-emerald-400 font-bold bg-emerald-500/10 px-2 py-1 rounded flex gap-1 items-center"><MapPinIcon/> Pecq</span>
+                                        </div>
+                                        <div className="text-sm font-medium text-emerald-500 mb-3">Enseignant Spécialisé</div>
+                                        <p className="text-sm text-slate-400 mb-2"><strong>Contexte :</strong> Accompagnement de publics à besoins spécifiques.</p>
+                                        <p className="text-sm text-slate-400"><strong>Réalisation :</strong> Pédagogie de la patience et de la réussite. Capacité à lever les blocages et redonner confiance.</p>
+                                    </div>
+                                </div>
+
+                                {/* UT-IETS */}
+                                <div className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
+                                    <div className="flex items-center justify-center w-10 h-10 rounded-full border border-slate-700 bg-slate-900 group-[.is-active]:bg-emerald-500 text-slate-500 group-[.is-active]:text-emerald-50 shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2">
+                                        <div className="w-3 h-3 bg-white rounded-full"></div>
+                                    </div>
+                                    <div className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-6 rounded-2xl border border-slate-800 bg-slate-950 shadow-lg">
+                                        <div className="flex justify-between items-start mb-2">
+                                            <h3 className="font-bold text-white">UT-IETS</h3>
+                                            <span className="text-xs text-emerald-400 font-bold bg-emerald-500/10 px-2 py-1 rounded flex gap-1 items-center"><MapPinIcon/> Charleroi</span>
+                                        </div>
+                                        <div className="text-sm font-medium text-emerald-500 mb-3">Enseignant & Facilitateur de Projet</div>
+                                        <p className="text-sm text-slate-400 mb-2"><strong>Contexte :</strong> Apprentissage par la gestion de projet.</p>
+                                        <p className="text-sm text-slate-400"><strong>Réalisation :</strong> Animation de dynamiques de groupe. Apprentissage de la collaboration et de l'organisation.</p>
+                                    </div>
+                                </div>
+
+                                {/* Athénée Royal */}
+                                <div className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
+                                    <div className="flex items-center justify-center w-10 h-10 rounded-full border border-slate-700 bg-slate-900 group-[.is-active]:bg-emerald-500 text-slate-500 group-[.is-active]:text-emerald-50 shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2">
+                                        <div className="w-3 h-3 bg-white rounded-full"></div>
+                                    </div>
+                                    <div className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-6 rounded-2xl border border-slate-800 bg-slate-950 shadow-lg">
+                                        <div className="flex justify-between items-start mb-2">
+                                            <h3 className="font-bold text-white">Athénée Royal</h3>
+                                            <span className="text-xs text-emerald-400 font-bold bg-emerald-500/10 px-2 py-1 rounded flex gap-1 items-center"><MapPinIcon/> Quiévrain</span>
+                                        </div>
+                                        <div className="text-sm font-medium text-emerald-500 mb-3">Professeur de Comptabilité & Gestion</div>
+                                        <p className="text-sm text-slate-400 mb-2"><strong>Contexte :</strong> Filières techniques qualifiantes.</p>
+                                        <p className="text-sm text-slate-400"><strong>Réalisation :</strong> Transmission rigoureuse de compétences techniques. Souci de rendre la matière accessible.</p>
+                                    </div>
+                                </div>
+
+                                 {/* CEFA */}
+                                 <div className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
+                                    <div className="flex items-center justify-center w-10 h-10 rounded-full border border-slate-700 bg-slate-900 group-[.is-active]:bg-emerald-500 text-slate-500 group-[.is-active]:text-emerald-50 shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2">
+                                        <div className="w-3 h-3 bg-white rounded-full"></div>
+                                    </div>
+                                    <div className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-6 rounded-2xl border border-slate-800 bg-slate-950 shadow-lg">
+                                        <div className="flex justify-between items-start mb-2">
+                                            <h3 className="font-bold text-white">CEFA</h3>
+                                            <span className="text-xs text-emerald-400 font-bold bg-emerald-500/10 px-2 py-1 rounded flex gap-1 items-center"><MapPinIcon/> Tournai</span>
+                                        </div>
+                                        <div className="text-sm font-medium text-emerald-500 mb-3">Enseignant en Logistique & Vente (Alternance)</div>
+                                        <p className="text-sm text-slate-400 mb-2"><strong>Contexte :</strong> Public en alternance (Centre de formation / Entreprise).</p>
+                                        <p className="text-sm text-slate-400"><strong>Réalisation :</strong> Création de ponts entre formation et réalité terrain. Accompagnement vers l'autonomie.</p>
+                                    </div>
+                                </div>
+
+                                {/* Collège de la Lys */}
+                                <div className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
+                                    <div className="flex items-center justify-center w-10 h-10 rounded-full border border-slate-700 bg-slate-900 group-[.is-active]:bg-emerald-500 text-slate-500 group-[.is-active]:text-emerald-50 shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2">
+                                        <div className="w-3 h-3 bg-white rounded-full"></div>
+                                    </div>
+                                    <div className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-6 rounded-2xl border border-slate-800 bg-slate-950 shadow-lg">
+                                        <div className="flex justify-between items-start mb-2">
+                                            <h3 className="font-bold text-white">Collège de la Lys</h3>
+                                            <span className="text-xs text-emerald-400 font-bold bg-emerald-500/10 px-2 py-1 rounded flex gap-1 items-center"><MapPinIcon/> Comines</span>
+                                        </div>
+                                        <div className="text-sm font-medium text-emerald-500 mb-3">Professeur de Sciences Économiques</div>
+                                        <p className="text-sm text-slate-400 mb-2"><strong>Contexte :</strong> Cours d'économie générale.</p>
+                                        <p className="text-sm text-slate-400"><strong>Réalisation :</strong> Développement de l'esprit critique et de l'analyse économique et sociale.</p>
+                                    </div>
+                                </div>
+
+                                {/* Institut Notre-Dame */}
+                                <div className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
+                                    <div className="flex items-center justify-center w-10 h-10 rounded-full border border-slate-700 bg-slate-900 group-[.is-active]:bg-emerald-500 text-slate-500 group-[.is-active]:text-emerald-50 shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2">
+                                        <div className="w-3 h-3 bg-white rounded-full"></div>
+                                    </div>
+                                    <div className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-6 rounded-2xl border border-slate-800 bg-slate-950 shadow-lg">
+                                        <div className="flex justify-between items-start mb-2">
+                                            <h3 className="font-bold text-white">Institut Notre-Dame</h3>
+                                            <span className="text-xs text-emerald-400 font-bold bg-emerald-500/10 px-2 py-1 rounded flex gap-1 items-center"><MapPinIcon/> Charleroi</span>
+                                        </div>
+                                        <div className="text-sm font-medium text-emerald-500 mb-3">Enseignant en Gestion & Marketing</div>
+                                        <p className="text-sm text-slate-400 mb-2"><strong>Contexte :</strong> Projets entrepreneuriaux.</p>
+                                        <p className="text-sm text-slate-400"><strong>Réalisation :</strong> Accompagnement de l'esprit d'initiative. Supervision de projets créatifs.</p>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* FORMATION & CERTIFICATIONS */}
+                    <section id="formation" className="py-20 px-6">
+                        <div className="max-w-5xl mx-auto">
+                            <div className="text-center mb-12">
+                                <h2 className="text-3xl font-bold text-white section-title">Formation & Certifications</h2>
+                            </div>
+                            
+                            <div className="grid md:grid-cols-2 gap-6">
+                                <div className="glass-panel p-8 rounded-2xl border-l-4 border-l-blue-500">
+                                    <div className="flex items-center gap-3 mb-4">
+                                        <div className="p-2 bg-blue-500/20 rounded-lg text-blue-400"><GraduationIcon/></div>
+                                        <h3 className="text-xl font-bold text-white">CAP</h3>
+                                    </div>
+                                    <p className="text-sm text-blue-300 mb-2">Fédération Wallonie-Bruxelles</p>
+                                    <p className="text-slate-400 text-sm italic">"Habilitation officielle à la transmission des savoirs, à la conception de séquences didactiques et à l'évaluation des acquis. La base solide de mon ingénierie de formation."</p>
+                                </div>
+
+                                <div className="glass-panel p-8 rounded-2xl border-l-4 border-l-purple-500">
+                                    <div className="flex items-center gap-3 mb-4">
+                                        <div className="p-2 bg-purple-500/20 rounded-lg text-purple-400"><GraduationIcon/></div>
+                                        <h3 className="text-xl font-bold text-white">Bachelier en Marketing</h3>
+                                    </div>
+                                    <p className="text-sm text-purple-300 mb-2">Haute École de la Communauté Française (Mons)</p>
+                                    <p className="text-slate-400 text-sm italic">"Maîtrise des techniques de communication, de l'analyse comportementale et de la stratégie. Ces compétences nourrissent mes modules sur l'image de soi."</p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* FOOTER */}
+                    <footer className="py-20 px-6 bg-black border-t border-slate-900">
+                        <div className="max-w-4xl mx-auto text-center">
+                            <h2 className="text-3xl font-bold text-white mb-8">Contactez-moi</h2>
+                            <div className="flex flex-col md:flex-row justify-center gap-6">
+                                <a href="mailto:AmorElhamrouni@gmail.com" className="flex items-center justify-center gap-3 px-8 py-4 bg-slate-900 border border-slate-800 rounded-xl hover:border-blue-500 transition-all group">
+                                    <span className="text-slate-400 group-hover:text-blue-500"><MailIcon /></span>
+                                    <span className="text-slate-300">AmorElhamrouni@gmail.com</span>
+                                </a>
+                                <a href="tel:0487898793" className="flex items-center justify-center gap-3 px-8 py-4 bg-slate-900 border border-slate-800 rounded-xl hover:border-green-500 transition-all group">
+                                    <span className="text-slate-400 group-hover:text-green-500"><PhoneIcon /></span>
+                                    <span className="text-slate-300">0487.89.87.93</span>
+                                </a>
+                                <a href="https://linkedin.com/in/amor-elhamrouni" target="_blank" className="flex items-center justify-center gap-3 px-8 py-4 bg-slate-900 border border-slate-800 rounded-xl hover:border-blue-400 transition-all group">
+                                    <span className="text-slate-400 group-hover:text-blue-400"><LinkedinIcon /></span>
+                                    <span className="text-slate-300">LinkedIn</span>
+                                </a>
+                            </div>
+                            <p className="mt-12 text-slate-600 text-sm">© 2025 Amor El Hamrouni. Tous droits réservés.</p>
+                        </div>
+                    </footer>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<Portfolio />);
+    </script>
+</body>
+</html>
